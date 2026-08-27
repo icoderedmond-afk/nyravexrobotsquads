@@ -28,11 +28,12 @@
         .toolbar {
             margin-top: 10px;
             display: flex;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
+            flex-wrap: wrap;
         }
         .tool-btn {
-            padding: 8px 16px;
+            padding: 8px 14px;
             border: 2px solid #4f46e5;
             background: #1e1e24;
             color: white;
@@ -56,12 +57,15 @@
 <body>
 
     <div class="game-container">
-        <canvas id="gameCanvas" width="500" height="400"></canvas>
+        <canvas id="gameCanvas" width="520" height="400"></canvas>
         <div class="toolbar">
-            <button class="tool-btn active" onclick="setMaterial('#8b5a2b', this)">Dirt</button>
-            <button class="tool-btn" onclick="setMaterial('#2ecc71', this)">Grass</button>
-            <button class="tool-btn" onclick="setMaterial('#7f8c8d', this)">Stone</button>
-            <button class="tool-btn" onclick="setMaterial(null, this)">Eraser</button>
+            <button class="tool-btn active" onclick="setMaterial('#8b5a2b', this)">1: Dirt</button>
+            <button class="tool-btn" onclick="setMaterial('#2ecc71', this)">2: Grass</button>
+            <button class="tool-btn" onclick="setMaterial('#7f8c8d', this)">3: Stone</button>
+            <button class="tool-btn" onclick="setMaterial('#a0522d', this)">4: Wood</button>
+            <button class="tool-btn" onclick="setMaterial('#27ae60', this)">5: Leaves</button>
+            <button class="tool-btn" onclick="setMaterial('#3498db', this)">6: Glass</button>
+            <button class="tool-btn" onclick="setMaterial(null, this)">🗑️ Eraser</button>
         </div>
         <a href="../../index.html" class="back-link">&larr; Back to Arcade Hub</a>
     </div>
@@ -74,7 +78,6 @@
         const cols = canvas.width / tileSize;
         const rows = canvas.height / tileSize;
 
-        // Initialize grid matrix (ground floor populated by default)
         let grid = [];
         for (let r = 0; r < rows; r++) {
             grid[r] = [];
@@ -115,11 +118,17 @@
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
                     if (grid[r][c]) {
-                        ctx.fillStyle = grid[r][c];
+                        let color = grid[r][c];
+                        ctx.fillStyle = color;
                         ctx.fillRect(c * tileSize, r * tileSize, tileSize, tileSize);
                         
-                        // Block bevel border effect
-                        ctx.strokeStyle = "rgba(0,0,0,0.15)";
+                        // Pseudo 3D isometric bevel borders
+                        ctx.fillStyle = "rgba(0,0,0,0.2)";
+                        ctx.fillRect(c * tileSize, r * tileSize + tileSize - 6, tileSize, 6);
+                        ctx.fillStyle = "rgba(255,255,255,0.15)";
+                        ctx.fillRect(c * tileSize, r * tileSize, tileSize, 6);
+
+                        ctx.strokeStyle = "rgba(0,0,0,0.3)";
                         ctx.strokeRect(c * tileSize, r * tileSize, tileSize, tileSize);
                     }
                 }
