@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block Craft 3D Mini</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #1a1a2e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .game-container {
+            text-align: center;
+        }
+        canvas {
+            border: 4px solid #4f46e5;
+            background-color: #87CEEB;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            cursor: pointer;
+        }
+        .toolbar {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .tool-btn {
+            padding: 8px 16px;
+            border: 2px solid #4f46e5;
+            background: #1e1e24;
+            color: white;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        .tool-btn.active {
+            background: #4f46e5;
+        }
+        .back-link {
+            margin-top: 15px;
+            display: block;
+            color: #818cf8;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <canvas id="gameCanvas" width="500" height="400"></canvas>
+        <div class="toolbar">
+            <button class="tool-btn active" onclick="setMaterial('#8b5a2b', this)">Dirt</button>
+            <button class="tool-btn" onclick="setMaterial('#2ecc71', this)">Grass</button>
+            <button class="tool-btn" onclick="setMaterial('#7f8c8d', this)">Stone</button>
+            <button class="tool-btn" onclick="setMaterial(null, this)">Eraser</button>
+        </div>
+        <a href="../../index.html" class="back-link">&larr; Back to Arcade Hub</a>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        const tileSize = 40;
+        const cols = canvas.width / tileSize;
+        const rows = canvas.height / tileSize;
+
+        // Initialize grid matrix (ground floor populated by default)
+        let grid = [];
+        for (let r = 0; r < rows; r++) {
+            grid[r] = [];
+            for (let c = 0; c < cols; c++) {
+                if (r >= rows - 3) {
+                    grid[r][c] = r === rows - 3 ? "#2ecc71" : "#8b5a2b";
+                } else {
+                    grid[r][c] = null;
+                }
+            }
+        }
+
+        let selectedColor = "#8b5a2b";
+
+        function setMaterial(color, btn) {
+            selectedColor = color;
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        canvas.addEventListener("click", (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const c = Math.floor(x / tileSize);
+            const r = Math.floor(y / tileSize);
+
+            if (r >= 0 && r < rows && c >= 0 && c < cols) {
+                grid[r][c] = selectedColor;
+                draw();
+            }
+        });
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    if (grid[r][c]) {
+                        ctx.fillStyle = grid[r][c];
+                        ctx.fillRect(c * tileSize, r * tileSize, tileSize, tileSize);
+                        
+                        // Block bevel border effect
+                        ctx.strokeStyle = "rgba(0,0,0,0.15)";
+                        ctx.strokeRect(c * tileSize, r * tileSize, tileSize, tileSize);
+                    }
+                }
+            }
+        }
+
+        draw();
+    </script>
+</body>
+</html>
